@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import Entity from "./Entity";
+import {VOXEL_DEPTH, VOXEL_HEIGHT, VOXEL_WIDTH} from "../core/globals";
 import type InputManager from "../core/input";
 import type HarvestScene from "../scenes/HarvestScene";
 
@@ -31,7 +32,6 @@ const Y_DEATHPLANE = -25;
 const pitch = new THREE.Quaternion();
 const yaw = new THREE.Quaternion();
 const direction = new THREE.Vector3();
-const position = new THREE.Vector3();
 
 export default class Player extends Entity<HarvestScene>
 {
@@ -61,129 +61,6 @@ export default class Player extends Entity<HarvestScene>
 			this.mouselock = Boolean(document.pointerLockElement);
 		});
 	}
-
-	/**
-	 * Detect and resolve collision with the scene level.
-	 */
-	// private collision():void
-	// {
-	// 	position.copy(this.position).add(this.velocity);
-
-	// 	Int32 startx = (Int32)(((Single)position.X) / Tile.SIZE) - 1;
-	// 	Int32 endx = (Int32)(((Single)position.X + this.Width - 0.0001f) / Tile.SIZE) + 1; // because of float imprecision, we subtract 0.0001f.
-	// 	Int32 starty = (Int32)(((Single)position.Y) / Tile.SIZE) - 1;
-	// 	Int32 endy = (Int32)(((Single)position.Y + this.Height - 0.0001f) / Tile.SIZE) + 1; // because of float imprecision, we subtract 0.0001f.
-
-	// 	// these variables are filled with only solid tiles
-	// 	List<Point> horizontalWall = new List<Point>();
-	// 	List<Point> verticalWall = new List<Point>();
-	// 	Point ?corner = null;
-
-	// 	if (this.IsMovingRight)
-	// 	{
-	// 		// we use starty + 1 to remove the corner
-	// 		for (Int32 y = starty + 1; y < endy; y += 1)
-	// 			if (realm.GetTile(endx, y).IsSolid)
-	// 				verticalWall.Add(new Point(endx, y));
-	// 	}
-	// 	else if (this.IsMovingLeft)
-	// 	{
-	// 		// we use starty + 1 to remove the corner
-	// 		for (Int32 y = starty + 1; y < endy; y += 1)
-	// 			if (realm.GetTile(startx, y).IsSolid)
-	// 				verticalWall.Add(new Point(startx, y));
-	// 	}
-
-	// 	if (this.IsMovingDown)
-	// 	{
-	// 		// we use startx + 1 to remove the corner
-	// 		for (Int32 x = startx + 1; x < endx; x += 1)
-	// 			if (realm.GetTile(x, endy).IsSolid)
-	// 				horizontalWall.Add(new Point(x, endy));
-	// 	}
-	// 	else if (this.IsMovingUp)
-	// 	{
-	// 		// we use startx + 1 to remove the corner
-	// 		for (Int32 x = startx + 1; x < endx; x += 1)
-	// 			if (realm.GetTile(x, starty).IsSolid)
-	// 				horizontalWall.Add(new Point(x, starty));
-	// 	}
-
-	// 	if (this.IsMovingLeft && this.IsMovingUp)
-	// 	{
-	// 		if (realm.GetTile(startx, starty).IsSolid)
-	// 			corner = new Point(startx, starty);
-	// 	}
-	// 	else if (this.IsMovingRight && this.IsMovingUp)
-	// 	{
-	// 		if (realm.GetTile(endx, starty).IsSolid)
-	// 			corner = new Point(endx, starty);
-	// 	}
-	// 	else if (this.IsMovingLeft && this.IsMovingDown)
-	// 	{
-	// 		if (realm.GetTile(startx, endy).IsSolid)
-	// 			corner = new Point(startx, endy);
-	// 	}
-	// 	else if (this.IsMovingRight && this.IsMovingDown)
-	// 	{
-	// 		if (realm.GetTile(endx, endy).IsSolid)
-	// 			corner = new Point(endx, endy);
-	// 	}
-
-	// 	foreach (Point point in verticalWall)
-	// 	{
-	// 		// if our next position would collide with the tile, we fix velocity.
-	// 		if (nextPosition.X + this.Width > point.X * Tile.SIZE &&
-	// 			nextPosition.X < point.X * Tile.SIZE + Tile.SIZE)
-	// 		{
-	// 			if (this.IsMovingRight)
-	// 			{
-	// 				velocity.X = point.X * Tile.SIZE - (position.X + this.Width);
-	// 			}
-	// 			else if (this.IsMovingLeft)
-	// 			{
-	// 				velocity.X = (point.X * Tile.SIZE + Tile.SIZE) - position.X;
-	// 			}
-	// 		}
-	// 	}
-
-	// 	foreach (Point point in horizontalWall)
-	// 	{
-	// 		// if our next position would collide with the tile, we fix velocity.
-	// 		if (nextPosition.Y + this.Height > point.Y * Tile.SIZE &&
-	// 			nextPosition.Y < point.Y * Tile.SIZE + Tile.SIZE)
-	// 		{
-	// 			if (this.IsMovingDown)
-	// 			{
-	// 				velocity.Y = point.Y * Tile.SIZE - (position.Y + this.Height);
-	// 			}
-	// 			else if (this.IsMovingUp)
-	// 			{
-	// 				velocity.Y = (point.Y * Tile.SIZE + Tile.SIZE) - position.Y;
-	// 			}
-	// 		}
-	// 	}
-
-	// 	// in case we only have a corner to consider, we rule that we land on top of it, or hit the bottom of it.
-	// 	if (corner.HasValue && verticalWall.Count == 0 && horizontalWall.Count == 0)
-	// 	{
-	// 		// if our next position would collide with the tile, we fix velocity.
-	// 		if (nextPosition.Y + this.Height > corner.Value.Y * Tile.SIZE &&
-	// 			nextPosition.Y < corner.Value.Y * Tile.SIZE + Tile.SIZE &&
-	// 			nextPosition.X + this.Width > corner.Value.X * Tile.SIZE &&
-	// 			nextPosition.X < corner.Value.X * Tile.SIZE + Tile.SIZE)
-	// 		{
-	// 			if (this.IsMovingDown)
-	// 			{
-	// 				velocity.Y = corner.Value.Y * Tile.SIZE - (position.Y + this.Height);
-	// 			}
-	// 			else if (this.IsMovingUp)
-	// 			{
-	// 				velocity.Y = (corner.Value.Y * Tile.SIZE + Tile.SIZE) - position.Y;
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	/**
 	 * Update the player for this timestep.
@@ -224,10 +101,20 @@ export default class Player extends Entity<HarvestScene>
 		this.velocity.clampLength(0, SPEED);
 		this.velocity.y = yspeed - dt*GRAVITY;
 
+
 		// this.collision();
 
 		this.lasty = this.position.y;
 		super.update(dt);
+
+		const voxelX = Math.floor(this.position.x/VOXEL_WIDTH);
+		const voxelY = Math.floor(this.position.y/VOXEL_HEIGHT);
+		const voxelZ = Math.floor(this.position.z/VOXEL_DEPTH);
+
+		if(this.scene.level)
+			for(const crop of this.scene.level.crops)
+				if(crop.x === voxelX && crop.y === voxelY && crop.z === voxelZ)
+					crop.harvest();
 
 		const {y} = this.position;
 		if(y < HEIGHT/2)

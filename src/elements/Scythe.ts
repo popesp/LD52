@@ -19,8 +19,6 @@ export default class Scythe
 		this.mesh = new THREE.Mesh(Scythe.geometry, new THREE.MeshStandardMaterial({color: 0x808080, roughness: 0.5, depthTest: false}));
 		this.mesh.position.copy(position);
 		this.mesh.castShadow = true;
-
-		console.log(Scythe.geometry);
 	}
 
 	public static async initialize():Promise<void>
@@ -29,7 +27,5 @@ export default class Scythe
 
 		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		Scythe.geometry = (group.children[0] as THREE.Mesh).geometry;
-
-		console.log(Scythe.geometry);
 	}
 }

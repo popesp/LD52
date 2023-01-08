@@ -1,11 +1,8 @@
 import * as THREE from "three";
 import Crop from "./Crop";
+import {VOXEL_DEPTH, VOXEL_HEIGHT, VOXEL_WIDTH} from "../core/globals";
 import type LEVELS from "../../data/levels.json";
 
-
-const VOXEL_WIDTH = 1.0;
-const VOXEL_HEIGHT = 1.0;
-const VOXEL_DEPTH = 1.0;
 
 const MATERIAL_DIRT = new THREE.MeshStandardMaterial({color: 0xa08060});
 const MATERIAL_GRASS = new THREE.MeshStandardMaterial({color: 0x60a080});
@@ -15,6 +12,7 @@ const MATERIALS = [MATERIAL_DIRT, MATERIAL_GRASS];
 interface Voxel
 {
 	id:number;
+	crop:Crop|null;
 }
 
 type LevelConfig = typeof LEVELS[number];
@@ -37,7 +35,7 @@ export default class Level
 		this.height = config.voxels[0].length;
 		this.depth = config.voxels.length;
 
-		this.voxels = config.voxels.map((xy):(Voxel|null)[][] => xy.map((x):(Voxel|null)[] => x.map((id):Voxel|null => id ? {id} : null)));
+		this.voxels = config.voxels.map((xy):(Voxel|null)[][] => xy.map((x):(Voxel|null)[] => x.map((id):Voxel|null => id ? {id, crop: null} : null)));
 
 		this.meshes = new THREE.Group();
 		this.voxels.forEach((slice, z):void =>
@@ -58,7 +56,7 @@ export default class Level
 			});
 		});
 
-		this.crops = config.crops.map((cropConfig):Crop => new Crop(cropConfig.type));
+		this.crops = config.crops.map(({x, y, z, type}):Crop => new Crop(Crop.types[type], x, y, z));
 	}
 
 	public voxelAt({x, y, z}:THREE.Vector3):Voxel|null

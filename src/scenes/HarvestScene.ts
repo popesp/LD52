@@ -28,16 +28,21 @@ const LIGHT_POSITIONS = [
 	[LIGHT_SPACING, LIGHT_Y, -LIGHT_SPACING]
 ];
 
-const MAX_CROPS = 100;
+const SCYTHE_OFFSET_X = 0.5;
+const SCYTHE_OFFSET_Y = -0.3;
+const SCYTHE_OFFSET_Z = -0.5;
+const SCYTHE_ROTATION_X = -0.3;
+const SCYTHE_ROTATION_Y = Math.PI;
+const SCYTHE_ROTATION_Z = -0.3;
 
 
 export default class HarvestScene extends Scene
 {
 	public readonly camera:THREE.PerspectiveCamera;
+	public level:Level|null;
 
 	private readonly threeScene:THREE.Scene;
 	private readonly player:Player;
-	private readonly level:Level;
 	private readonly entities:Entity<HarvestScene>[];
 	private paused:boolean;
 
@@ -48,7 +53,7 @@ export default class HarvestScene extends Scene
 		this.threeScene = new THREE.Scene();
 		this.camera = new THREE.PerspectiveCamera(FOV, WIDTH_CANVAS/HEIGHT_CANVAS, FRUSTUM_NEAR, FRUSTUM_FAR);
 		this.player = new Player(this, game.input, X_SPAWN, Y_SPAWN, Z_SPAWN);
-		this.level = new Level(LEVELS[0]);
+		this.level = null;
 
 		this.entities = [this.player];
 
@@ -63,22 +68,15 @@ export default class HarvestScene extends Scene
 			return light;
 		}), new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
 
-		this.threeScene.add(this.camera, this.level.meshes, ...lights);
+		this.threeScene.add(this.camera, ...lights);
 	}
 
 	public override async initialize():Promise<void>
 	{
-		return Promise.all([
+		await Promise.all([
 			Scythe.initialize(),
-			Crop.initialize(MAX_CROPS)
-		]).then(():void =>
-		{
-			for(const {mesh} of Object.values(Crop.types))
-			{
-				mesh.count = 0;
-				this.threeScene.add(mesh);
-			}
-		});
+			Crop.initialize()
+		]);
 	}
 
 	public override start():void
@@ -86,10 +84,14 @@ export default class HarvestScene extends Scene
 		document.body.requestPointerLock();
 
 		const scythe = new Scythe(this, new THREE.Vector3(0, 0, 0));
-		scythe.mesh.position.set(0.5, -0.3, -0.5);
-		scythe.mesh.rotation.set(-0.3, Math.PI, -0.3, "XZY");
+		scythe.mesh.position.set(SCYTHE_OFFSET_X, SCYTHE_OFFSET_Y, SCYTHE_OFFSET_Z);
+		scythe.mesh.rotation.set(SCYTHE_ROTATION_X, SCYTHE_ROTATION_Y, SCYTHE_ROTATION_Z, "XZY");
 
 		this.camera.add(scythe.mesh);
+
+		this.level = new Level(LEVELS[0]);
+
+		this.threeScene.add(this.level.meshes, ...this.level.crops.map((crop):THREE.Mesh => crop.mesh));
 	}
 
 	public override update(dt:number):void
@@ -107,11 +109,6 @@ export default class HarvestScene extends Scene
 		for(const mesh of Array.from(new Set(this.entities.map((entity):THREE.InstancedMesh|null => entity.mesh))))
 			if(mesh)
 				mesh.count = 0;
-
-		for(const crop of this.level.crops)
-		{
-			
-		}
 
 		for(const entity of this.entities)
 			if(entity.alive)
