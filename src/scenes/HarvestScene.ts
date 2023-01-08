@@ -39,6 +39,7 @@ export default class HarvestScene extends Scene
 	private readonly scene_camera:THREE.Scene;
 	private readonly player:Player;
 	private readonly entities:Entity<HarvestScene>[];
+	private readonly lights:THREE.Light[];
 	private paused:boolean;
 
 	public constructor(game:Game)
@@ -58,11 +59,9 @@ export default class HarvestScene extends Scene
 		const sunlight = new THREE.DirectionalLight(LIGHT_COLOR_SUNLIGHT, LIGHT_INTENSITY_SUNLIGHT);
 		sunlight.position.set(LIGHT_X_SUNLIGHT, LIGHT_Y_SUNLIGHT, LIGHT_Z_SUNLIGHT);
 		sunlight.castShadow = true;
-		const lights = [sunlight, new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
-		const lights2 = [new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
+		this.lights = [sunlight, new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
 
-		this.scene_level.add(...lights);
-		this.scene_camera.add(this.camera, ...lights2);
+		this.scene_level.add(...this.lights);
 	}
 
 	public override async initialize():Promise<void>
@@ -141,5 +140,13 @@ export default class HarvestScene extends Scene
 	public override destroy():void
 	{
 		this.scene_level.clear();
+		this.scene_camera.clear();
+
+		this.player.destroy();
+		for(const light of this.lights)
+			light.dispose();
+
+		Scythe.destroy();
+		Crop.destroy();
 	}
 }

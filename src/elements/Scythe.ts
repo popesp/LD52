@@ -27,4 +27,9 @@ export default class Scythe
 		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		Scythe.geometry = (group.children[0] as THREE.Mesh).geometry;
 	}
+
+	public static destroy():void
+	{
+		Scythe.geometry.dispose();
+	}
 }
