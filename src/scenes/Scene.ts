@@ -1,4 +1,4 @@
-import type Game from "../game";
+import type Game from "../core/game";
 
 
 export default abstract class Scene

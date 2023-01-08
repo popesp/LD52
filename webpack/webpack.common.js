@@ -1,3 +1,4 @@
+import CopyWebpackPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import path from "path";
 import {fileURLToPath} from "url";
@@ -17,6 +18,10 @@ export default {
 			{
 				test: /\.css$/u,
 				use: ["style-loader", "css-loader"]
+			},
+			{
+				test: /\.json$/u,
+				loader: "json-loader"
 			}
 		]
 	},
@@ -24,9 +29,17 @@ export default {
 		filename: "bundle.js",
 		path: path.resolve(dirname, "../dist")
 	},
-	plugins: [new HtmlWebpackPlugin({
-		title: "LD52"
-	})],
+	plugins: [
+		new HtmlWebpackPlugin({
+			title: "LD52"
+		}),
+		new CopyWebpackPlugin({
+			patterns: [{
+				from: "assets",
+				to: "assets"
+			}]
+		})
+	],
 	resolve: {
 		extensions: [".ts", ".js"]
 	}

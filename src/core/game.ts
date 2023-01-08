@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {WIDTH_CANVAS, HEIGHT_CANVAS} from "./globals";
-import type Scene from "./scenes/Scene";
+import InputManager from "./input";
+import type Scene from "../scenes/Scene";
 
 
 const SECONDS_PER_MS = 0.001;
@@ -9,7 +10,9 @@ const DT_MIN = 0.033333333333;
 
 export default class Game
 {
-	private readonly renderer:THREE.WebGLRenderer;
+	public readonly renderer:THREE.WebGLRenderer;
+	public readonly input:InputManager;
+
 	private scene_active:Scene|null;
 
 	/**
@@ -22,6 +25,8 @@ export default class Game
 		window.addEventListener("resize", ():void => this.resize());
 		this.resize();
 
+		this.input = new InputManager();
+
 		this.scene_active = null;
 		let t_last:number|null = null;
 
@@ -31,6 +36,7 @@ export default class Game
 
 			const dt = Math.min(DT_MIN, SECONDS_PER_MS*(t - t_last));
 			this.scene_active?.update(dt);
+			this.input.update();
 
 			t_last = t;
 			requestAnimationFrame(step);
@@ -67,10 +73,9 @@ export default class Game
 		this.scene_active?.destroy();
 		this.scene_active = null;
 
-		await scene.initialize().then(():void =>
-		{
-			scene.start();
-			this.scene_active = scene;
-		});
+		await scene.initialize();
+
+		scene.start();
+		this.scene_active = scene;
 	}
 }

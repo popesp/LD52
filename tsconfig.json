@@ -1,6 +1,9 @@
 {
 	"compilerOptions": {
+		"downlevelIteration": true,
+		"esModuleInterop": true,
 		"moduleResolution": "node",
+		"resolveJsonModule": true,
 		"strict": true
 	},
 	"include": ["**/*.ts"]
