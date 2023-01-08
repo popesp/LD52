@@ -1,5 +1,8 @@
 {
 	"corn": {
 		"name": "Corn"
+	},
+	"tomato": {
+		"name": "Tomato"
 	}
 }

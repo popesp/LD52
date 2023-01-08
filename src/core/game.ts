@@ -21,6 +21,10 @@ export default class Game
 	public constructor()
 	{
 		this.renderer = new THREE.WebGLRenderer({antialias: false});
+		this.renderer.autoClear = false;
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = THREE.PCFShadowMap;
+
 		document.body.appendChild(this.renderer.domElement);
 		window.addEventListener("resize", ():void => this.resize());
 		this.resize();

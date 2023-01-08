@@ -48,6 +48,7 @@ export default class Level
 					{
 						const mesh = new THREE.Mesh(Level.geometry_voxel, MATERIALS[voxel.id - 1]);
 						mesh.position.set(x*VOXEL_WIDTH, y*VOXEL_HEIGHT, z*VOXEL_DEPTH);
+						mesh.castShadow = true;
 						mesh.receiveShadow = true;
 
 						this.meshes.add(mesh);

@@ -1,21 +1,18 @@
 import * as THREE from "three";
 import {VOXEL_DEPTH, VOXEL_HEIGHT, VOXEL_WIDTH} from "../core/globals";
+import type Player from "../entities/Player";
 import CROPS from "../../data/crops.json";
 
 
-const PIXELS_HEIGHT_TEXTURE = 44;
-const PIXELS_SUBMERGED = 5;
-
-
 type CropType = typeof CROPS[keyof typeof CROPS] & {
-	material:THREE.MeshBasicMaterial;
-	material_harvested:THREE.MeshBasicMaterial;
+	material:THREE.MeshStandardMaterial;
+	material_harvested:THREE.MeshStandardMaterial;
 };
 
 export default class Crop
 {
 	public static readonly types:Record<string, CropType> = {};
-	private static readonly geometry:THREE.BufferGeometry = new THREE.PlaneGeometry().translate(0, 1/2 - PIXELS_SUBMERGED/PIXELS_HEIGHT_TEXTURE, 0).scale(1/2, 1, 1);
+	private static readonly geometry:THREE.BufferGeometry = new THREE.PlaneGeometry().translate(0, 1/2, 0).scale(1/2, 1, 1);
 
 	public readonly x:number;
 	public readonly y:number;
@@ -33,8 +30,15 @@ export default class Crop
 		this.z = z;
 		this.mesh = new THREE.Mesh(Crop.geometry, this.type.material);
 		this.mesh.position.set(x*VOXEL_WIDTH + VOXEL_WIDTH/2, y*VOXEL_HEIGHT, z*VOXEL_DEPTH + VOXEL_DEPTH/2);
+		this.mesh.receiveShadow = true;
 
 		this.harvested = false;
+	}
+
+	public update(player:Player):void
+	{
+		const diff = new THREE.Vector3().copy(player.position).sub(this.mesh.position);
+		this.mesh.rotation.set(0, Math.atan2(diff.x, diff.z), 0);
 	}
 
 	public harvest():void
@@ -61,8 +65,8 @@ export default class Crop
 
 			Crop.types[key] = {
 				...type,
-				material: new THREE.MeshBasicMaterial({map: texture, transparent: true}),
-				material_harvested: new THREE.MeshBasicMaterial({map: texture_harvested, transparent: true})
+				material: new THREE.MeshStandardMaterial({map: texture, transparent: true}),
+				material_harvested: new THREE.MeshStandardMaterial({map: texture_harvested, transparent: true})
 			};
 		}));
 	}

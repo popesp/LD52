@@ -18,10 +18,6 @@ export default {
 			{
 				test: /\.css$/u,
 				use: ["style-loader", "css-loader"]
-			},
-			{
-				test: /\.json$/u,
-				loader: "json-loader"
 			}
 		]
 	},

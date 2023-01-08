@@ -15,18 +15,12 @@ const X_SPAWN = 8;
 const Y_SPAWN = 2;
 const Z_SPAWN = 4;
 
-const LIGHT_SPACING = 20;
-const LIGHT_Y = 20;
-const LIGHT_COLOR = 0xffffff;
-const LIGHT_COLOR_AMBIENT = 0x303030;
-const LIGHT_INTENSITY = 0.5;
-const LIGHT_DISTANCE = 80;
-const LIGHT_POSITIONS = [
-	[-LIGHT_SPACING, LIGHT_Y, LIGHT_SPACING],
-	[LIGHT_SPACING, LIGHT_Y, LIGHT_SPACING],
-	[-LIGHT_SPACING, LIGHT_Y, -LIGHT_SPACING],
-	[LIGHT_SPACING, LIGHT_Y, -LIGHT_SPACING]
-];
+const LIGHT_COLOR_AMBIENT = 0x606060;
+const LIGHT_COLOR_SUNLIGHT = 0xffffff;
+const LIGHT_INTENSITY_SUNLIGHT = 0.5;
+const LIGHT_X_SUNLIGHT = 20;
+const LIGHT_Y_SUNLIGHT = 10;
+const LIGHT_Z_SUNLIGHT = 10;
 
 const SCYTHE_OFFSET_X = 0.5;
 const SCYTHE_OFFSET_Y = -0.3;
@@ -41,7 +35,8 @@ export default class HarvestScene extends Scene
 	public readonly camera:THREE.PerspectiveCamera;
 	public level:Level|null;
 
-	private readonly threeScene:THREE.Scene;
+	private readonly scene_level:THREE.Scene;
+	private readonly scene_camera:THREE.Scene;
 	private readonly player:Player;
 	private readonly entities:Entity<HarvestScene>[];
 	private paused:boolean;
@@ -50,7 +45,8 @@ export default class HarvestScene extends Scene
 	{
 		super(game);
 
-		this.threeScene = new THREE.Scene();
+		this.scene_level = new THREE.Scene();
+		this.scene_camera = new THREE.Scene();
 		this.camera = new THREE.PerspectiveCamera(FOV, WIDTH_CANVAS/HEIGHT_CANVAS, FRUSTUM_NEAR, FRUSTUM_FAR);
 		this.player = new Player(this, game.input, X_SPAWN, Y_SPAWN, Z_SPAWN);
 		this.level = null;
@@ -59,16 +55,14 @@ export default class HarvestScene extends Scene
 
 		this.paused = false;
 
-		const lights = [...LIGHT_POSITIONS.map(([x, y, z]):THREE.PointLight =>
-		{
-			const light = new THREE.PointLight(LIGHT_COLOR, LIGHT_INTENSITY, LIGHT_DISTANCE);
-			light.position.set(x, y, z);
-			light.castShadow = true;
+		const sunlight = new THREE.DirectionalLight(LIGHT_COLOR_SUNLIGHT, LIGHT_INTENSITY_SUNLIGHT);
+		sunlight.position.set(LIGHT_X_SUNLIGHT, LIGHT_Y_SUNLIGHT, LIGHT_Z_SUNLIGHT);
+		sunlight.castShadow = true;
+		const lights = [sunlight, new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
+		const lights2 = [new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
 
-			return light;
-		}), new THREE.AmbientLight(LIGHT_COLOR_AMBIENT)];
-
-		this.threeScene.add(this.camera, ...lights);
+		this.scene_level.add(...lights);
+		this.scene_camera.add(this.camera, ...lights2);
 	}
 
 	public override async initialize():Promise<void>
@@ -91,7 +85,7 @@ export default class HarvestScene extends Scene
 
 		this.level = new Level(LEVELS[0]);
 
-		this.threeScene.add(this.level.meshes, ...this.level.crops.map((crop):THREE.Mesh => crop.mesh));
+		this.scene_level.add(this.level.meshes, ...this.level.crops.map((crop):THREE.Mesh => crop.mesh));
 	}
 
 	public override update(dt:number):void
@@ -101,6 +95,10 @@ export default class HarvestScene extends Scene
 
 		if(this.paused)
 			return;
+
+		if(this.level)
+			for(const crop of this.level.crops)
+				crop.update(this.player);
 
 		const dummy = new THREE.Object3D();
 		dummy.rotation.order = "YXZ";
@@ -132,13 +130,16 @@ export default class HarvestScene extends Scene
 			}
 
 		if(!this.player.alive)
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			this.game.switchScene(new GameOverScene(this.game));
 
-		this.game.renderer.render(this.threeScene, this.camera);
+		this.game.renderer.clear();
+		this.game.renderer.render(this.scene_level, this.camera);
+		this.game.renderer.render(this.scene_camera, this.camera);
 	}
 
 	public override destroy():void
 	{
-		this.threeScene.clear();
+		this.scene_level.clear();
 	}
 }

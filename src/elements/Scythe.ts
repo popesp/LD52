@@ -18,7 +18,6 @@ export default class Scythe
 
 		this.mesh = new THREE.Mesh(Scythe.geometry, new THREE.MeshStandardMaterial({color: 0x808080, roughness: 0.5, depthTest: false}));
 		this.mesh.position.copy(position);
-		this.mesh.castShadow = true;
 	}
 
 	public static async initialize():Promise<void>
