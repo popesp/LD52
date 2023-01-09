@@ -1,8 +1,10 @@
 {
 	"corn": {
-		"name": "Corn"
+		"name": "Corn",
+		"ability": "double-jump"
 	},
 	"tomato": {
-		"name": "Tomato"
+		"name": "Tomato",
+		"ability": "double-jump"
 	}
 }

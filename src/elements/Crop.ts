@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import {VOXEL_DEPTH, VOXEL_HEIGHT, VOXEL_WIDTH} from "../core/globals";
 import type Player from "../entities/Player";
+// import type {PlayerAbility} from "../entities/Player";
 import CROPS from "../../data/crops.json";
 
 
 type CropType = typeof CROPS[keyof typeof CROPS] & {
+	// ability:PlayerAbility;
 	material:THREE.MeshStandardMaterial;
 	material_harvested:THREE.MeshStandardMaterial;
 };

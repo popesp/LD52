@@ -29,6 +29,9 @@ const GRAVITY = 12;
 
 const Y_DEATHPLANE = -25;
 
+
+export type PlayerAbility = "double-jump"|"grapple";
+
 const pitch = new THREE.Quaternion();
 const yaw = new THREE.Quaternion();
 const direction = new THREE.Vector3();
@@ -41,6 +44,7 @@ export default class Player extends Entity<HarvestScene>
 	private mouselock:boolean;
 	private canjump:boolean;
 	private lasty:number;
+	private ability:PlayerAbility|null;
 
 	/**
 	 * Create a new player.
@@ -55,6 +59,7 @@ export default class Player extends Entity<HarvestScene>
 		this.mouselock = false;
 		this.canjump = false;
 		this.lasty = this.position.y;
+		this.ability = null;
 
 		document.addEventListener("pointerlockchange", ():void =>
 		{
