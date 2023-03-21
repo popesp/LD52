@@ -8,22 +8,23 @@
 		"lint": "eslint ."
 	},
 	"devDependencies": {
-		"@types/three": "^0.148.0",
-		"@typescript-eslint/eslint-plugin": "^5.48.0",
-		"@typescript-eslint/parser": "^5.48.0",
-		"copy-webpack-plugin": "^11.0.0",
-		"css-loader": "^6.7.3",
-		"eslint": "^8.31.0",
-		"html-webpack-plugin": "^5.5.0",
-		"style-loader": "^3.3.1",
-		"ts-loader": "^9.4.2",
-		"typescript": "^4.9.4",
-		"webpack": "^5.75.0",
-		"webpack-cli": "^5.0.1",
-		"webpack-dev-server": "^4.11.1",
-		"webpack-merge": "^5.8.0"
+		"@types/three": "0.149.0",
+		"@typescript-eslint/eslint-plugin": "5.56.0",
+		"@typescript-eslint/parser": "5.56.0",
+		"copy-webpack-plugin": "11.0.0",
+		"css-loader": "6.7.3",
+		"eslint": "8.36.0",
+		"eslint-config-popesp": "github:popesp/eslint-config",
+		"html-webpack-plugin": "5.5.0",
+		"style-loader": "3.3.2",
+		"ts-loader": "9.4.2",
+		"typescript": "5.0.2",
+		"webpack": "5.76.2",
+		"webpack-cli": "5.0.1",
+		"webpack-dev-server": "4.13.1",
+		"webpack-merge": "5.8.0"
 	},
 	"dependencies": {
-		"three": "^0.148.0"
+		"three": "0.150.1"
 	}
 }
